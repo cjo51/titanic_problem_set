@@ -1,14 +1,15 @@
+import pandas as pd
+import numpy as np
+
 def missing_data(df):
     total = df.isnull().sum()
-    percent = (total/df.isnull().count()*100)
-    tt = pd.concat([total, percent], axis=1, keys=['Total', 'Percent'])
-    types = []
-    for col in df.columns:
-        dtype = str(df[col].dtype)
-        types.append(dtype)
-    tt['Types'] = types
-    df_missing = np.transpose(tt)
-    return df_missing
+    percent = (total / len(df) * 100)
+    missing_summary = pd.DataFrame({
+        'Total': total,
+        'Percent': percent,
+        'Types': df.dtypes
+    })
+    return missing_summary
 
 def most_frequent_data(df):
     total = df.count()
@@ -16,10 +17,10 @@ def most_frequent_data(df):
     tt.columns = ['Total']
     items = []
     vals = []
-    for col in train_df.columns:
+    for col in df.columns:
         try:
-            itm = train_df[col].value_counts().index[0]
-            val = train_df[col].value_counts().values[0]
+            itm = df[col].value_counts().index[0]
+            val = df[col].value_counts().values[0]
             items.append(itm)
             vals.append(val)
         except Exception as ex:
@@ -39,10 +40,22 @@ def unique_values(df):
     tt = pd.DataFrame(total)
     tt.columns = ['Total']
     uniques = []
-    for col in train_df.columns:
-        unique = train_df[col].nunique()
+    for col in df.columns:
+        unique = df[col].nunique()
         uniques.append(unique)
     tt['Uniques'] = uniques
     np.transpose(tt)
 
     return tt
+
+def unique_values_summary(df):
+    total = df.count()
+    tt = pd.DataFrame(total)
+    tt.columns = ['Total']
+    uniques = []
+    for col in df.columns:
+        unique = df[col].nunique()
+        uniques.append(unique)
+    tt['Uniques'] = uniques
+    unique_summary=np.transpose(tt)
+    return unique_summary
