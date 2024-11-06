@@ -2,12 +2,6 @@
 
 import pandas as pd
 
-def load_data(PATH):
-    df = pd.read_csv(PATH)
-
-    return df
-
-
 def combine_train_test(train_df, test_df, target_col):
     """
     Combine the train and test DataFrames, and label the rows based on the dataset they belong to.
