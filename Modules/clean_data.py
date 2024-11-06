@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-class DataCleaner(self, df):
+class DataCleaner:
     # Constructor initialises the classes
     def __init__(self, dataframe):
         self.dataframe = dataframe
@@ -9,6 +9,7 @@ class DataCleaner(self, df):
         Constructor initialises the classes
         Takes a pandas dataframe as an argument
         """    
+
     def add_family_size(self):
         """
         add_family_size 
@@ -22,7 +23,6 @@ class DataCleaner(self, df):
         self.dataframe["Family Size"] = self.dataframe['SibSp'] + self.dataframe['Parch'] + 1
 
         return self.dataframe
-
 
     def add_age_interval(self):
         """
@@ -112,7 +112,7 @@ class DataCleaner(self, df):
                     Given Name, and Maiden Name.
         """
         # Apply the parse_names function to extract name components
-        self.dataframe[["Family Name", "Title", "Given Name", "Maiden Name"]] = df.apply(lambda row: parse_names(row), axis=1)
+        self.dataframe[["Family Name", "Title", "Given Name", "Maiden Name"]] = self.dataframe.apply(lambda row: DataCleaner.parse_names(row), axis=1)
         return self.dataframe
 
     def add_family_type_column(self):
