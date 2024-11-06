@@ -3,14 +3,14 @@ import numpy as np
 
 class DataCleaner:
     # Constructor initialises the classes
-    def __init__(self, dataframe):
-        self.dataframe = dataframe
+    def __init__(self):
         """ 
         Constructor initialises the classes
         Takes a pandas dataframe as an argument
         """    
+        pass
 
-    def add_family_size(self):
+    def add_family_size(self, df):
         """
         add_family_size 
 
@@ -20,11 +20,11 @@ class DataCleaner:
         Returns:
         pd.DataFrame: The original DataFrame with an added 'Family Size' column.
         """        
-        self.dataframe["Family Size"] = self.dataframe['SibSp'] + self.dataframe['Parch'] + 1
+        df["Family Size"] = df['SibSp'] + df['Parch'] + 1
 
-        return self.dataframe
+        return df
 
-    def add_age_interval(self):
+    def add_age_interval(self, df):
         """
         Add an 'Age Interval' column to the DataFrame, categorizing ages into intervals.
 
@@ -32,33 +32,33 @@ class DataCleaner:
         pd.DataFrame: The original DataFrame with an added 'Age Interval' column.
         """
         # Initialize the 'Age Interval' column with default values
-        self.dataframe["Age Interval"] = 0.0
+        df["Age Interval"] = 0.0
         
         # Apply conditions to assign age intervals
-        self.dataframe.loc[self.dataframe['Age'] <= 16, 'Age Interval'] = 0
-        self.dataframe.loc[(self.dataframe['Age'] > 16) & (self.dataframe['Age'] <= 32), 'Age Interval'] = 1
-        self.dataframe.loc[(self.dataframe['Age'] > 32) & (self.dataframe['Age'] <= 48), 'Age Interval'] = 2
-        self.dataframe.loc[(self.dataframe['Age'] > 48) & (self.dataframe['Age'] <= 64), 'Age Interval'] = 3
-        self.dataframe.loc[self.dataframe['Age'] > 64, 'Age Interval'] = 4
+        df.loc[df['Age'] <= 16, 'Age Interval'] = 0
+        df.loc[(df['Age'] > 16) & (df['Age'] <= 32), 'Age Interval'] = 1
+        df.loc[(df['Age'] > 32) & (df['Age'] <= 48), 'Age Interval'] = 2
+        df.loc[(df['Age'] > 48) & (df['Age'] <= 64), 'Age Interval'] = 3
+        df.loc[df['Age'] > 64, 'Age Interval'] = 4
 
-        return self.dataframe
+        return df
 
-    def add_fare_interval_column(self):
+    def add_fare_interval_column(self, df):
         """
         Add a 'Fare Interval' column to the DataFrame based on fare ranges.
 
         Returns:
         pd.DataFrame: The DataFrame with the added 'Fare Interval' column.
         """
-        self.dataframe['Fare Interval'] = 0.0
-        self.dataframe.loc[self.dataframe['Fare'] <= 7.91, 'Fare Interval'] = 0
-        self.dataframe.loc[(self.dataframe['Fare'] > 7.91) & (self.dataframe['Fare'] <= 14.454), 'Fare Interval'] = 1
-        self.dataframe.loc[(self.dataframe['Fare'] > 14.454) & (self.dataframe['Fare'] <= 31), 'Fare Interval'] = 2
-        self.dataframe.loc[self.dataframe['Fare'] > 31, 'Fare Interval'] = 3
+        df['Fare Interval'] = 0.0
+        df.loc[df['Fare'] <= 7.91, 'Fare Interval'] = 0
+        df.loc[(df['Fare'] > 7.91) & (df['Fare'] <= 14.454), 'Fare Interval'] = 1
+        df.loc[(df['Fare'] > 14.454) & (df['Fare'] <= 31), 'Fare Interval'] = 2
+        df.loc[df['Fare'] > 31, 'Fare Interval'] = 3
 
-        return self.dataframe
+        return df
 
-    def add_sex_pclass(self):
+    def add_sex_pclass(self, df):
         """
         Add a 'Sex_Pclass' column to the DataFrame, combining the first letter of 'Sex' 
         and the 'Pclass' with a specific format.
@@ -66,8 +66,8 @@ class DataCleaner:
         Returns:
         pd.DataFrame: The original DataFrame with an added 'Sex_Pclass' column.
         """
-        self.dataframe["Sex_Pclass"] = self.dataframe.apply(lambda row: row['Sex'][0].upper() + "_C" + str(row['Pclass']), axis=1)
-        return self.dataframe
+        df["Sex_Pclass"] = df.apply(lambda row: row['Sex'][0].upper() + "_C" + str(row['Pclass']), axis=1)
+        return df
 
     @staticmethod
     def parse_names(row):
@@ -102,7 +102,7 @@ class DataCleaner:
             print(f"Exception: {ex}")
             return pd.Series([None, None, None, None])
     
-    def extract_names(self):
+    def extract_names(self, df):
         """
         Extract family name, title, given name, and maiden name from the 'Name' column 
         and add them as new columns to the DataFrame.
@@ -112,24 +112,24 @@ class DataCleaner:
                     Given Name, and Maiden Name.
         """
         # Apply the parse_names function to extract name components
-        self.dataframe[["Family Name", "Title", "Given Name", "Maiden Name"]] = self.dataframe.apply(lambda row: DataCleaner.parse_names(row), axis=1)
-        return self.dataframe
+        df[["Family Name", "Title", "Given Name", "Maiden Name"]] = df.apply(lambda row: DataCleaner.parse_names(row), axis=1)
+        return df
 
-    def add_family_type_column(self):
+    def add_family_type_column(self, df):
         """
         Add a 'Family Type' column based on 'Family Size' to the provided datasets.
 
         Returns:
         pd.DataFrame: The original DataFrame with 'Family Type' column
         """
-        if "Family Size" in self.dataframe.columns:
-            self.dataframe["Family Type"] = self.dataframe["Family Size"]
+        if "Family Size" in df.columns:
+            df["Family Type"] = df["Family Size"]
         else:
-            print(f"'Family Size' column not found in dataset with shape {self.dataframe.shape}.")
+            print(f"'Family Size' column not found in dataset with shape {df.shape}.")
         
-        return self.dataframe
+        return df
 
-    def assign_family_type(self):
+    def assign_family_type(self, df):
         """
         Assign a 'Family Type' based on 'Family Size' for the provided dataset.
 
@@ -137,13 +137,13 @@ class DataCleaner:
         datasets (list of pd.DataFrame): Dataset to which the 'Family Type' column will be assigned.
         """
         # Assign 'Family Type' based on 'Family Size'
-        self.dataframe.loc[self.dataframe["Family Size"] == 1, "Family Type"] = "Single"
-        self.dataframe.loc[(self.dataframe["Family Size"] > 1) & (self.dataframe["Family Size"] < 5), "Family Type"] = "Small"
-        self.dataframe.loc[self.dataframe["Family Size"] >= 5, "Family Type"] = "Large"
+        df.loc[df["Family Size"] == 1, "Family Type"] = "Single"
+        df.loc[(df["Family Size"] > 1) & (df["Family Size"] < 5), "Family Type"] = "Small"
+        df.loc[df["Family Size"] >= 5, "Family Type"] = "Large"
 
-        return self.dataframe
+        return df
 
-    def unify_titles(self):
+    def unify_titles(self, df):
         """
         Standardize titles in the 'Titles' column for the provided datasets.
 
@@ -152,24 +152,24 @@ class DataCleaner:
         """
 
         # Unify 'Miss'
-        self.dataframe['Titles'] = self.dataframe['Titles'].replace({'Mlle.': 'Miss.', 'Ms.': 'Miss.'})
+        df['Titles'] = df['Titles'].replace({'Mlle.': 'Miss.', 'Ms.': 'Miss.'})
         # Unify 'Mrs'
-        self.dataframe['Titles'] = self.dataframe['Titles'].replace({'Mme.': 'Mrs.'})
+        df['Titles'] = df['Titles'].replace({'Mme.': 'Mrs.'})
         # Unify Rare titles
         rare_titles = ['Lady.', 'the Countess.', 'Capt.', 'Col.', 'Don.', 
                         'Dr.', 'Major.', 'Rev.', 'Sir.', 'Jonkheer.', 'Dona.']
-        self.dataframe['Titles'] = self.dataframe['Titles'].replace(rare_titles, 'Rare')
+        df['Titles'] = df['Titles'].replace(rare_titles, 'Rare')
 
-    def calculate_survival_rate_by_title_and_sex(self):
+    def calculate_survival_rate_by_title_and_sex(self, df):
         """
         Calculate the mean survival rate grouped by 'Titles' and 'Sex'.
 
         Returns:
         pd.DataFrame: A DataFrame with the mean survival rates grouped by 'Titles' and 'Sex'.
         """
-        return self.dataframe[['Titles', 'Sex', 'Survived']].groupby(['Titles', 'Sex'], as_index=False).mean()
+        return df[['Titles', 'Sex', 'Survived']].groupby(['Titles', 'Sex'], as_index=False).mean()
 
-    def map_sex_column(self):
+    def map_sex_column(self, df):
         """
         Maps the 'Sex' column to integers, where 'female' is 1 and 'male' is 0.
 
@@ -180,6 +180,6 @@ class DataCleaner:
         None: The function modifies the DataFrames in place.
         """
 
-        self.dataframe['Sex'] = self.dataframe['Sex'].map({'female': 1, 'male': 0}).astype(int)
+        df['Sex'] = df['Sex'].map({'female': 1, 'male': 0}).astype(int)
 
-        return self.dataframe
+        return df
